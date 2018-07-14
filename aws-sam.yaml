@@ -1,0 +1,27 @@
+﻿AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: This streams a Twitter search using Streamdata.io, pulling data via the API and turning it into a stream and publishing the results to an Amazon S3 data lake.
+Resources:
+  streamdataiotwittersearch:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs6.10
+      CodeUri: s3://streamdata-serverless/streamdata-io-twitter-search/package.zip
+      Description: This streams a Twitter search using Streamdata.io, pulling data via the API and turning it into a stream and publishing the results to an Amazon S3 data lake.
+      MemorySize: 128
+      Timeout: 30
+      Policies:
+        - LambdaInvokePolicy:
+            FunctionName: streamdata-io-twitter-search
+        - S3CrudPolicy:
+            BucketName: streaming-data-lake
+      Environment:
+        Variables:
+          targetUrl: 'https://api.twitter.com/1.1/search/tweets.json'
+          s3bucket: streaming-data-lake
+          targetFolder: twitter-data
+          appToken: Streamdata.io-Application-Token
+          oauthToken: Twitter-OAuth-Token
+          userAgent: YourAppName/0.1 by YourCompanyName
+          query: api
